@@ -78,6 +78,41 @@
       transform: scale(1.1);
     }
 
+    .contract-message {
+      position: absolute;
+      bottom: 22%;
+      width: 100%;
+      text-align: center;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    .contract-message.show {
+      opacity: 1;
+    }
+
+    .contract-message p {
+      display: inline-block;
+      background: rgba(255, 45, 111, 0.15);
+      border: 1px solid rgba(255, 45, 111, 0.4);
+      backdrop-filter: blur(8px);
+      color: #ffccd5;
+      font-size: 1.1rem;
+      padding: 12px 28px;
+      border-radius: 16px;
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+
     .love-message {
       position: absolute;
       top: 0;
@@ -152,6 +187,10 @@
     <h1>Te amo mucho ❤️</h1>
   </div>
 
+  <div class="contract-message" id="contractMessage">
+    <p>Lo siento, tiene que poner que sí... ¡está en el contrato! 📜❤️</p>
+  </div>
+
   <div class="hearts-rain" id="heartsRain"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.158/build/three.min.js"></script>
@@ -161,15 +200,24 @@
     function onClickSi() {
       document.getElementById('buttonsContainer').style.display = 'none';
       document.getElementById('question').style.display = 'none';
+      document.getElementById('contractMessage').classList.remove('show');
       document.getElementById('loveMessage').classList.add('show');
       createHeartsRain();
     }
 
     function onClickNo() {
       const btnNo = document.getElementById('btnNo');
-      btnNo.textContent = 'Sí';
-      btnNo.className = 'btn btn-si';
-      btnNo.onclick = onClickSi;
+      const contractMsg = document.getElementById('contractMessage');
+
+      // Mostrar el mensaje del contrato
+      contractMsg.classList.add('show');
+
+      // Cambiar el botón de "No" a "Sí" después de un momento
+      setTimeout(() => {
+        btnNo.textContent = 'Sí';
+        btnNo.className = 'btn btn-si';
+        btnNo.onclick = onClickSi;
+      }, 800);
     }
 
     function createHeartsRain() {
