@@ -14,7 +14,7 @@
 
     .overlay {
       position: absolute;
-      top: 8%;
+      top: 5%;
       width: 100%;
       text-align: center;
       color: #fff;
@@ -23,7 +23,7 @@
     }
 
     .overlay h1 {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       margin: 0;
       text-shadow: 0 0 20px rgba(255, 80, 120, 0.8);
     }
@@ -33,18 +33,161 @@
       font-size: 1.1rem;
       opacity: 0.8;
     }
+
+    .buttons-container {
+      position: absolute;
+      bottom: 12%;
+      width: 100%;
+      text-align: center;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .btn {
+      padding: 16px 48px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .btn-si {
+      background: linear-gradient(135deg, #ff4d8d, #ff2d6f);
+      color: white;
+      box-shadow: 0 0 25px rgba(255, 45, 111, 0.5);
+    }
+
+    .btn-si:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 40px rgba(255, 45, 111, 0.8);
+    }
+
+    .btn-no {
+      background: linear-gradient(135deg, #888, #666);
+      color: white;
+      box-shadow: 0 0 15px rgba(100, 100, 100, 0.3);
+    }
+
+    .btn-no:hover {
+      transform: scale(1.1);
+    }
+
+    .love-message {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease;
+    }
+
+    .love-message.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .love-message h1 {
+      font-size: 3.5rem;
+      color: #fff;
+      text-shadow: 0 0 40px rgba(255, 80, 120, 1), 0 0 80px rgba(255, 45, 111, 0.6);
+      animation: pulse-text 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-text {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .hearts-rain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 19;
+      overflow: hidden;
+    }
+
+    .falling-heart {
+      position: absolute;
+      top: -5%;
+      font-size: 2rem;
+      animation: fall linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="overlay">
+  <div class="overlay" id="question">
     <h1>¿Quieres ser mi San Valentín? ❤️</h1>
     <p>Con todo mi corazón</p>
   </div>
 
+  <div class="buttons-container" id="buttonsContainer">
+    <button class="btn btn-si" id="btnSi" onclick="onClickSi()">Sí</button>
+    <button class="btn btn-no" id="btnNo" onclick="onClickNo()">No</button>
+  </div>
+
+  <div class="love-message" id="loveMessage">
+    <h1>Te amo mucho ❤️</h1>
+  </div>
+
+  <div class="hearts-rain" id="heartsRain"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/three@0.158/build/three.min.js"></script>
 
   <script>
+    // Botones interactivos
+    function onClickSi() {
+      document.getElementById('buttonsContainer').style.display = 'none';
+      document.getElementById('question').style.display = 'none';
+      document.getElementById('loveMessage').classList.add('show');
+      createHeartsRain();
+    }
+
+    function onClickNo() {
+      const btnNo = document.getElementById('btnNo');
+      btnNo.textContent = 'Sí';
+      btnNo.className = 'btn btn-si';
+      btnNo.onclick = onClickSi;
+    }
+
+    function createHeartsRain() {
+      const container = document.getElementById('heartsRain');
+      const hearts = ['❤️', '💕', '💖', '💗', '💝', '🩷'];
+      for (let i = 0; i < 30; i++) {
+        const heart = document.createElement('span');
+        heart.className = 'falling-heart';
+        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.animationDuration = (3 + Math.random() * 4) + 's';
+        heart.style.animationDelay = Math.random() * 5 + 's';
+        heart.style.fontSize = (1.2 + Math.random() * 1.5) + 'rem';
+        container.appendChild(heart);
+      }
+    }
+
+    // ======= THREE.JS SCENE =======
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
@@ -61,47 +204,13 @@
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
 
-    // ❤️ Geometría del corazón (más chiquito)
-    const heartShape = new THREE.Shape();
-    heartShape.moveTo(0, 0);
-    heartShape.bezierCurveTo(0, 0, -1, -1, -2, 0);
-    heartShape.bezierCurveTo(-3, 2, -1, 3, 0, 4);
-    heartShape.bezierCurveTo(1, 3, 3, 2, 2, 0);
-    heartShape.bezierCurveTo(1, -1, 0, 0, 0, 0);
-
-    const heartGeometry = new THREE.ExtrudeGeometry(heartShape, {
-      depth: 0.4,
-      bevelEnabled: true,
-      bevelThickness: 0.2,
-      bevelSize: 0.15,
-      bevelSegments: 20
-    });
-
-    heartGeometry.center();
-
-    const heartMaterial = new THREE.MeshStandardMaterial({
-      color: 0xff2d6f,
-      metalness: 0.4,
-      roughness: 0.2,
-      emissive: 0x33000f
-    });
-
-    const heart = new THREE.Mesh(heartGeometry, heartMaterial);
-    // Voltear el corazón para que quede bien orientado
-    heart.rotation.x = Math.PI;
-    // Hacerlo más chiquito
-    heart.scale.set(0.45, 0.45, 0.45);
-    heart.position.set(1.8, 1.0, 0);
-    scene.add(heart);
-
-    // 🐰 Personaje 3D estilo Miffy
+    // 🐰 Personaje 3D estilo Miffy con corazón en las manos
     const miffyGroup = new THREE.Group();
 
     // Materiales
     const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0.05 });
     const blackMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5 });
     const orangeMat = new THREE.MeshStandardMaterial({ color: 0xdd5522, roughness: 0.4, metalness: 0.05 });
-    const pinkNoseMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5 });
 
     // Cabeza (esfera ligeramente achatada)
     const headGeo = new THREE.SphereGeometry(0.7, 32, 32);
@@ -134,7 +243,7 @@
     eyeRight.position.set(0.22, 1.15, 0.6);
     miffyGroup.add(eyeRight);
 
-    // Boca (X de Miffy) - dos líneas cruzadas usando cilindros delgados
+    // Boca (X de Miffy)
     const mouthGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.15, 8);
     const mouthLine1 = new THREE.Mesh(mouthGeo, blackMat);
     mouthLine1.position.set(0, 0.92, 0.65);
@@ -148,7 +257,7 @@
     mouthLine2.rotation.x = Math.PI / 2;
     miffyGroup.add(mouthLine2);
 
-    // Cuerpo (cilindro redondeado con esfera)
+    // Cuerpo (vestido naranja)
     const bodyGeo = new THREE.SphereGeometry(0.55, 32, 32);
     const body = new THREE.Mesh(bodyGeo, orangeMat);
     body.scale.set(1, 1.2, 0.85);
@@ -168,18 +277,51 @@
     collar.rotation.x = Math.PI / 2;
     miffyGroup.add(collar);
 
-    // Bracito izquierdo
+    // Bracito izquierdo - levantado hacia el corazón
     const armGeo = new THREE.CapsuleGeometry(0.08, 0.25, 8, 8);
     const armLeft = new THREE.Mesh(armGeo, whiteMat);
-    armLeft.position.set(-0.55, 0.1, 0);
-    armLeft.rotation.z = 0.3;
+    armLeft.position.set(-0.45, 0.45, 0.3);
+    armLeft.rotation.z = 0.6;
+    armLeft.rotation.x = -0.4;
     miffyGroup.add(armLeft);
 
-    // Bracito derecho
+    // Bracito derecho - levantado hacia el corazón
     const armRight = new THREE.Mesh(armGeo, whiteMat);
-    armRight.position.set(0.55, 0.1, 0);
-    armRight.rotation.z = -0.3;
+    armRight.position.set(0.45, 0.45, 0.3);
+    armRight.rotation.z = -0.6;
+    armRight.rotation.x = -0.4;
     miffyGroup.add(armRight);
+
+    // ❤️ Corazón en las manos de Miffy
+    const heartShape = new THREE.Shape();
+    heartShape.moveTo(0, 0);
+    heartShape.bezierCurveTo(0, 0, -1, -1, -2, 0);
+    heartShape.bezierCurveTo(-3, 2, -1, 3, 0, 4);
+    heartShape.bezierCurveTo(1, 3, 3, 2, 2, 0);
+    heartShape.bezierCurveTo(1, -1, 0, 0, 0, 0);
+
+    const heartGeometry = new THREE.ExtrudeGeometry(heartShape, {
+      depth: 0.3,
+      bevelEnabled: true,
+      bevelThickness: 0.15,
+      bevelSize: 0.12,
+      bevelSegments: 20
+    });
+    heartGeometry.center();
+
+    const heartMaterial = new THREE.MeshStandardMaterial({
+      color: 0xff2d6f,
+      metalness: 0.4,
+      roughness: 0.2,
+      emissive: 0x33000f
+    });
+
+    const heart = new THREE.Mesh(heartGeometry, heartMaterial);
+    heart.rotation.x = Math.PI;
+    heart.scale.set(0.28, 0.28, 0.28);
+    // Posicionar el corazón frente al pecho de Miffy, entre sus brazos
+    heart.position.set(0, 0.55, 0.55);
+    miffyGroup.add(heart);
 
     // Pierna izquierda
     const legGeo = new THREE.CapsuleGeometry(0.1, 0.2, 8, 8);
@@ -192,12 +334,12 @@
     legRight.position.set(0.2, -0.55, 0);
     miffyGroup.add(legRight);
 
-    // Posicionar a Miffy en la escena
-    miffyGroup.position.set(-1.2, -0.8, 0);
-    miffyGroup.scale.set(1.1, 1.1, 1.1);
+    // Centrar a Miffy en la escena
+    miffyGroup.position.set(0, -0.5, 0);
+    miffyGroup.scale.set(1.3, 1.3, 1.3);
     scene.add(miffyGroup);
 
-    // ✨ Partículas de corazones flotantes
+    // ✨ Partículas flotantes
     const particleCount = 60;
     const particlesGeo = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
@@ -231,8 +373,8 @@
     light2.position.set(-4, 3, 3);
     scene.add(light2);
 
-    const light3 = new THREE.PointLight(0xffffff, 0.4);
-    light3.position.set(0, -2, 4);
+    const light3 = new THREE.PointLight(0xffffff, 0.5);
+    light3.position.set(0, 0, 5);
     scene.add(light3);
 
     // 🎥 Animación
@@ -243,14 +385,13 @@
 
       const t = clock.getElapsedTime();
 
-      // Latido del corazón
-      const heartScale = 0.45 + Math.sin(t * 3) * 0.02;
-      heart.scale.set(heartScale, heartScale, heartScale);
-      heart.rotation.y += 0.008;
+      // Latido del corazón en las manos de Miffy
+      const heartPulse = 0.28 + Math.sin(t * 3) * 0.015;
+      heart.scale.set(heartPulse, heartPulse, heartPulse);
 
       // Miffy se balancea suavemente
       miffyGroup.rotation.y = Math.sin(t * 0.8) * 0.15;
-      miffyGroup.position.y = -0.8 + Math.sin(t * 1.2) * 0.05;
+      miffyGroup.position.y = -0.5 + Math.sin(t * 1.2) * 0.05;
 
       // Partículas suben
       const posArray = particlesGeo.attributes.position.array;
