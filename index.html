@@ -151,6 +151,20 @@
       50% { transform: scale(1.08); }
     }
 
+    .anniversary-msg {
+      font-size: 1.5rem;
+      color: #ffccd5;
+      margin-top: 15px;
+      opacity: 0;
+      animation: fadeInUp 1.2s ease 1s forwards;
+      text-shadow: 0 0 20px rgba(255, 80, 120, 0.6);
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
     .hearts-rain {
       position: fixed;
       top: 0;
@@ -215,6 +229,11 @@
         font-size: 2.8rem;
         padding: 0 15px;
       }
+
+      .anniversary-msg {
+        font-size: 1.3rem;
+        padding: 0 15px;
+      }
     }
 
     /* ====== Responsive: Mobile phones (480px and below) ====== */
@@ -261,6 +280,11 @@
         padding: 0 10px;
       }
 
+      .anniversary-msg {
+        font-size: 1rem;
+        padding: 0 10px;
+      }
+
       .falling-heart {
         font-size: 1.4rem;
       }
@@ -283,6 +307,10 @@
 
       .love-message h1 {
         font-size: 1.7rem;
+      }
+
+      .anniversary-msg {
+        font-size: 0.9rem;
       }
 
       .contract-message p {
@@ -326,6 +354,10 @@
       .love-message h1 {
         font-size: 2rem;
       }
+
+      .anniversary-msg {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
@@ -343,6 +375,7 @@
 
   <div class="love-message" id="loveMessage">
     <h1>Te amo mucho ❤️</h1>
+    <p class="anniversary-msg">Te veo el sábado para celebrar nuestro aniversario 💕</p>
   </div>
 
   <div class="contract-message" id="contractMessage">
